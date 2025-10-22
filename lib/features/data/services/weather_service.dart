@@ -60,7 +60,6 @@ class WeatherService {
     return _get('forecast.json', params, forceRefresh: forceRefresh);
   }
 
-  /// If you want to fetch a range of future dates (e.g., many dates),
   /// call getFuture repeatedly but be mindful of API quotas.
   Future<List<Map<String, dynamic>>> getFutureRange(
       String q, List<String> dates,

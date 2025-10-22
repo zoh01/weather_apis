@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/weather_service.dart';  // or your actual service path
+import '../../data/services/weather_service.dart';
 
-// ✅ Add this at the top (outside any class)
 enum LoadingState { idle, loading, error }
 
 class WeatherProvider extends ChangeNotifier {

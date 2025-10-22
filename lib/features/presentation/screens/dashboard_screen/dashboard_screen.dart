@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:weather_apis/features/presentation/screens/dashboard_screen/widgets/info_tile.dart';
 import 'package:weather_apis/utils/constants/colors.dart';
 import 'package:weather_apis/utils/constants/sizes.dart';
 
-import '../../../data/services/weaher_provider.dart';
+import '../../../domain/provider/weaher_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -73,14 +74,51 @@ class _HomeScreenState extends State<HomeScreen>
             child: Row(
               children: [
                 Expanded(
-                  child: TextField(
+                  child: TextFormField(
                     controller: _locationController,
-                    decoration: const InputDecoration(
-                      labelText: 'Location (city or lat,lon)',
-                      border: OutlineInputBorder(),
+                    keyboardType: TextInputType.text,
+                    cursorColor: ZohColors.darkColor,
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: ZohSizes.md,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Enter Location',
+                      labelStyle: TextStyle(
+                        color: ZohColors.darkColor,
+                        fontSize: ZohSizes.md,
+                      ),
+                      hintText: 'e.g. Lagos',
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      filled: true,
+                      fillColor: ZohColors.white,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(ZohSizes.sm),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade400,
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(ZohSizes.sm),
+                        borderSide: BorderSide(
+                          color: ZohColors.primaryColor,
+                          width: 1.8,
+                        ),
+                      ),
+                      prefixIcon: Icon(
+                        Icons.location_on_outlined,
+                        color: ZohColors.primaryColor,
+                      ),
                     ),
                   ),
                 ),
+
                 const SizedBox(width: ZohSizes.sm),
                 ElevatedButton(
                   onPressed: () {
@@ -145,26 +183,38 @@ class _HomeScreenState extends State<HomeScreen>
         children: [
           Text(
             "${location['name'] ?? ''}, ${location['country'] ?? ''}",
-            style: const TextStyle(fontSize: ZohSizes.defaultSpace, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: ZohSizes.defaultSpace,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             "${current['temp_c'] ?? '--'}°C",
-            style: const TextStyle(fontSize: ZohSizes.spaceBtwSections, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: ZohSizes.spaceBtwSections,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
-          Text(current['condition']?['text'] ?? '', style: TextStyle(fontSize: ZohSizes.md, fontWeight: FontWeight.normal),),
+          Text(
+            current['condition']?['text'] ?? '',
+            style: TextStyle(
+              fontSize: ZohSizes.md,
+              fontWeight: FontWeight.normal,
+            ),
+          ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 12,
             runSpacing: 12,
             children: [
-              _infoTile('Feels like', "${current['feelslike_c'] ?? '--'}°C"),
-              _infoTile('Wind', "${current['wind_kph'] ?? '--'} kph"),
-              _infoTile('Humidity', "${current['humidity'] ?? '--'}%"),
-              _infoTile('Pressure', "${current['pressure_mb'] ?? '--'} mb"),
-              _infoTile('UV', "${current['uv'] ?? '--'}"),
-              _infoTile('Last updated', "${current['last_updated'] ?? '--'}"),
+              InfoTile(title: 'Feels like', value: "${current['feelslike_c'] ?? '--'}°C"),
+              InfoTile(title: 'Wind', value: "${current['wind_kph'] ?? '--'} kph"),
+              InfoTile(title: 'Humidity', value: "${current['humidity'] ?? '--'}%"),
+              InfoTile(title: 'Pressure', value: "${current['pressure_mb'] ?? '--'} mb"),
+              InfoTile(title: 'UV', value: "${current['uv'] ?? '--'}"),
+              InfoTile(title: 'Last updated', value: "${current['last_updated'] ?? '--'}"),
             ],
           ),
         ],
@@ -190,13 +240,17 @@ class _HomeScreenState extends State<HomeScreen>
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
+            textAlign: TextAlign.center,
             regionName,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontSize: ZohSizes.defaultSpace,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: ZohSizes.sm),
           if (tides.isNotEmpty)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,7 +267,10 @@ class _HomeScreenState extends State<HomeScreen>
           if (forecastDay != null)
             const Text(
               'Marine forecast (hourly/day):',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: ZohSizes.md,
+              ),
             ),
           if (forecastDay != null) ...[
             // show first day hourly if exists
@@ -222,9 +279,19 @@ class _HomeScreenState extends State<HomeScreen>
                   return ListTile(
                     dense: true,
                     title: Text(
+                      style: TextStyle(
+                        fontSize: ZohSizes.iconXs,
+                        color: ZohColors.darkColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                       "${h['time'].toString().split(' ').last} - ${h['condition']?['text'] ?? ''}",
                     ),
                     subtitle: Text(
+                      style: TextStyle(
+                        fontSize: ZohSizes.iconXs,
+                        color: ZohColors.darkColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                       "Swell height: ${h['swell_height_m'] ?? '--'} m, Wave height: ${h['wave_height_m'] ?? '--'} m",
                     ),
                   );
@@ -292,8 +359,18 @@ class _HomeScreenState extends State<HomeScreen>
                     prov.fetchFuture(_locationController.text, formatted);
                   }
                 },
-                icon: const Icon(Icons.calendar_month, size: 18),
-                label: const Text("Pick Date"),
+                icon: const Icon(
+                  Icons.calendar_month,
+                  size: ZohSizes.md,
+                  color: Colors.white,
+                ),
+                label: const Text(
+                  "Pick Date",
+                  style: TextStyle(color: Colors.white, fontSize: ZohSizes.md),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ZohColors.darkColor,
+                ),
               ),
             ],
           ),
@@ -308,18 +385,47 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 Text(
                   dayInfo['condition']?['text'] ?? '',
-                  style: const TextStyle(fontSize: ZohSizes.spaceBtwZoh),
+                  style: const TextStyle(
+                    fontSize: ZohSizes.spaceBtwZoh,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: ZohSizes.sm),
-                Text("Avg Temp: ${dayInfo['avgtemp_c']}°C"),
+                Text(
+                  "Avg Temp: ${dayInfo['avgtemp_c']}°C",
+                  style: TextStyle(
+                    fontSize: ZohSizes.md,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 Text(
                   "Max: ${dayInfo['maxtemp_c']}°C • Min: ${dayInfo['mintemp_c']}°C",
+                  style: TextStyle(
+                    fontSize: ZohSizes.md,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                Text("Humidity: ${dayInfo['avghumidity']}%"),
-                Text("UV: ${dayInfo['uv']}"),
+                Text(
+                  "Humidity: ${dayInfo['avghumidity']}%",
+                  style: TextStyle(
+                    fontSize: ZohSizes.md,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "UV: ${dayInfo['uv']}",
+                  style: TextStyle(
+                    fontSize: ZohSizes.md,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: ZohSizes.sm),
                 Text(
                   "Sunrise: ${astro['sunrise']} • Sunset: ${astro['sunset']}",
+                  style: TextStyle(
+                    fontSize: ZohSizes.md,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -327,7 +433,10 @@ class _HomeScreenState extends State<HomeScreen>
           const SizedBox(height: ZohSizes.spaceBtwZoh),
           const Text(
             "Hourly Forecast",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: ZohSizes.spaceBtwZoh,
+            ),
           ),
           const SizedBox(height: ZohSizes.sm),
           SizedBox(
@@ -349,11 +458,23 @@ class _HomeScreenState extends State<HomeScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(h['time'].toString().split(' ').last),
+                      Text(
+                        h['time'].toString().split(' ').last,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 4),
-                      Text("${h['temp_c']}°C"),
-                      Text(h['condition']?['text'] ?? ''),
-                      Text("Rain: ${h['chance_of_rain']}%"),
+                      Text(
+                        "${h['temp_c']}°C",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        h['condition']?['text'] ?? '',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        "Rain: ${h['chance_of_rain']}%",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 );
@@ -364,24 +485,5 @@ class _HomeScreenState extends State<HomeScreen>
       ),
     );
   }
-
-  Widget _infoTile(String title, String value) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      width: 170,
-      decoration: BoxDecoration(
-        color: Colors.blueGrey,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.black54),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: ZohSizes.spaceBtwZoh)),
-          const SizedBox(height: ZohSizes.sm),
-          Text(value, style: TextStyle(fontSize: ZohSizes.md),),
-        ],
-      ),
-    );
-  }
 }
+
