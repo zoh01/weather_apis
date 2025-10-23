@@ -16,8 +16,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
+
   final TextEditingController _locationController = TextEditingController(
-    text: 'Ibadan',
+    text: 'Lagos', // example: mid-Atlantic Ocean
   );
   late TabController _tabController;
   DateTime selectedDate = DateTime.now().add(const Duration(days: 15));
@@ -223,82 +224,165 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildMarineTab(WeatherProvider prov) {
-    if (prov.currentState == LoadingState.loading) {
+    if (prov.marineState == LoadingState.loading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (prov.currentState == LoadingState.error) {
+    if (prov.marineState == LoadingState.error) {
       return Center(child: Text('Error: ${prov.errorMessage}'));
     }
+
     final m = prov.marine;
     if (m == null) return const Center(child: Text('No marine data'));
 
-    // Marine response structure varies; show key fields if present
     final regionName = m['location']?['name'] ?? '';
     final tides = m['tide'] ?? {};
-    final forecastDay = m['forecast']?['forecastday'];
+    final forecastDay = m['forecast']?['forecastday'] as List?;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            textAlign: TextAlign.center,
-            regionName,
-            style: const TextStyle(
-              fontSize: ZohSizes.defaultSpace,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: ZohSizes.sm),
-          if (tides.isNotEmpty)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Tide info:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(tides.toString()),
-                // refine parsing based on actual payload
-              ],
-            ),
-          const SizedBox(height: 12),
-          if (forecastDay != null)
-            const Text(
-              'Marine forecast (hourly/day):',
-              style: TextStyle(
+    // Make sure we have at least one forecast day
+    if (forecastDay == null || forecastDay.isEmpty) {
+      return SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(regionName, style: const TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(height: 12),
+            const Text('No forecast data available'),
+          ],
+        ),
+      );
+    }
+
+    // Extract hours for the first forecast day
+    final hours = (forecastDay[0]['hour'] as List?) ?? <dynamic>[];
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Region Name
+            Text(
+              regionName,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: ZohSizes.defaultSpace,
                 fontWeight: FontWeight.bold,
-                fontSize: ZohSizes.md,
               ),
             ),
-          if (forecastDay != null) ...[
-            // show first day hourly if exists
-            ...(forecastDay as List).isNotEmpty
-                ? (forecastDay[0]['hour'] as List).take(8).map<Widget>((h) {
-                  return ListTile(
-                    dense: true,
-                    title: Text(
-                      style: TextStyle(
-                        fontSize: ZohSizes.iconXs,
-                        color: ZohColors.darkColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      "${h['time'].toString().split(' ').last} - ${h['condition']?['text'] ?? ''}",
+            const SizedBox(height: ZohSizes.md),
+
+            // Tide Info
+            if (tides.isNotEmpty) ...[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Tide Info:', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(tides.toString()),
+                ],
+              ),
+              const SizedBox(height: 12),
+            ],
+
+            const Text(
+              'Marine Forecast (Hourly)',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: ZohSizes.md),
+            ),
+            const SizedBox(height: 12),
+
+            // 🔹 Vertical GridView filling the rest of the screen
+            Expanded(
+              child: GridView.builder(
+                itemCount: hours.length > 8 ? 8 : hours.length, // Limit or show all
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, // 2 cards per row
+                ),
+                itemBuilder: (context, index) {
+                  final h = hours[index];
+                  final swell = h['swell_height_m'];
+                  final wave = h['wave_height_m'];
+                  final hasMarineData = swell != null || wave != null;
+
+                  return Container(
+                    margin: EdgeInsets.all(ZohSizes.md),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: ZohColors.bodyTextColor,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black,
+                          blurRadius: 6,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
                     ),
-                    subtitle: Text(
-                      style: TextStyle(
-                        fontSize: ZohSizes.iconXs,
-                        color: ZohColors.darkColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      "Swell height: ${h['swell_height_m'] ?? '--'} m, Wave height: ${h['wave_height_m'] ?? '--'} m",
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          h['time'].toString().split(' ').last,
+                          style: TextStyle(
+                            fontSize: ZohSizes.defaultSpace,
+                            fontWeight: FontWeight.bold,
+                            color: ZohColors.darkColor,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+
+                        if (h['condition']?['icon'] != null)
+                          Image.network(
+                            'https:${h['condition']?['icon']}',
+                            width: 70,
+                            height: 70,
+                            errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                          ),
+
+                        const SizedBox(height: 6),
+
+                        Text(
+                          h['condition']?['text'] ?? '',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: ZohSizes.md,
+                            color: ZohColors.darkColor,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+
+                        if (h['temp_c'] != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            "${h['temp_c']}°C",
+                            style: TextStyle(
+                              fontSize: ZohSizes.md,
+                              fontWeight: FontWeight.w600,
+                              color: ZohColors.darkColor,
+                            ),
+                          ),
+                        ],
+
+                        if (hasMarineData) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            "${swell ?? '--'}m / ${wave ?? '--'}m",
+                            style: TextStyle(
+                              fontSize: ZohSizes.xs,
+                              color: ZohColors.darkColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   );
-                }).toList()
-                : [const SizedBox()],
+                },
+              ),
+            ),
           ],
-        ],
+        ),
       ),
     );
   }
