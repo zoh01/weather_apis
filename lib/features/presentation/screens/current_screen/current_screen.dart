@@ -61,53 +61,50 @@ class _CurrentScreenState extends State<CurrentScreen> {
       ),
     ];
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Text(
-            "${location['name'] ?? ''}, ${location['country'] ?? ''}",
-            style: const TextStyle(
-              fontSize: ZohSizes.defaultSpace,
-              fontWeight: FontWeight.bold,
-              color: ZohColors.darkColor,
-            ),
+    return Column(
+      children: [
+        Text(
+          "${location['name'] ?? ''}, ${location['country'] ?? ''}",
+          style: const TextStyle(
+            fontSize: ZohSizes.defaultSpace,
+            fontWeight: FontWeight.bold,
+            color: ZohColors.darkColor,
           ),
-          const SizedBox(height: 8),
-          Text(
-            "${current['temp_c'] ?? '--'}°C",
-            style: const TextStyle(
-              fontSize: ZohSizes.spaceBtwSections,
-              fontWeight: FontWeight.bold,
-              color: ZohColors.primaryColor,
-            ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          "${current['temp_c'] ?? '--'}°C",
+          style: const TextStyle(
+            fontSize: ZohSizes.spaceBtwSections,
+            fontWeight: FontWeight.bold,
+            color: ZohColors.primaryColor,
           ),
-          const SizedBox(height: 8),
-          Text(
-            current['condition']?['text'] ?? '',
-            style: const TextStyle(
-              fontSize: ZohSizes.spaceBtwZoh,
-              fontWeight: FontWeight.bold,
-              color: ZohColors.darkColor,
-            ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          current['condition']?['text'] ?? '',
+          style: const TextStyle(
+            fontSize: ZohSizes.spaceBtwZoh,
+            fontWeight: FontWeight.bold,
+            color: ZohColors.darkColor,
           ),
-          const SizedBox(height: 12),
+        ),
+        const SizedBox(height: 12),
 
-          GridView.builder(
+        Expanded(
+          child: GridView.builder(
             shrinkWrap: true,
             itemCount: materialZoh.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: ZohSizes.gridViewSpacing,
-              mainAxisSpacing: ZohSizes.defaultSpace,
+              crossAxisCount: 2,
             ),
             itemBuilder: (context, index) {
               final zoh = materialZoh[index];
               return InfoTile(icon: zoh.icon, title: zoh.title, value: zoh.value);
             },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

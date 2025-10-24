@@ -17,7 +17,7 @@ class InfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.all(ZohSizes.iconXs),
       decoration: BoxDecoration(
         color: ZohColors.bodyTextColor.withOpacity(0.9),
         borderRadius: BorderRadius.circular(16),

@@ -70,15 +70,13 @@ class MarineScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        // GridView expands properly and scrolls independently
         Expanded(
           child: GridView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            shrinkWrap: true,
             itemCount: hours.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              mainAxisSpacing: ZohSizes.md,
-              crossAxisSpacing: ZohSizes.md,
+              childAspectRatio: 0.9,
             ),
             itemBuilder: (context, index) {
               final h = hours[index];
@@ -87,7 +85,7 @@ class MarineScreen extends StatelessWidget {
               final hasMarineData = swell != null || wave != null;
 
               return Container(
-                margin: const EdgeInsets.all(ZohSizes.xs),
+                margin: const EdgeInsets.all(ZohSizes.iconXs),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: ZohColors.bodyTextColor,
