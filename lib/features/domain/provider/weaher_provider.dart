@@ -45,13 +45,25 @@ class WeatherProvider extends ChangeNotifier {
   Future<void> fetchFuture(String location, String date) async {
     futureState = LoadingState.loading;
     notifyListeners();
+
     try {
-      futureForDate = await _service.getFuture(location, date);
+      final now = DateTime.now();
+      final selected = DateTime.parse(date);
+      final diff = selected.difference(now).inDays;
+
+      // Automatically pick endpoint
+      if (diff <= 14) {
+        futureForDate = await _service.getForecast(location, 14);
+      } else {
+        futureForDate = await _service.getFuture(location, date);
+      }
+
       futureState = LoadingState.idle;
     } catch (e) {
       futureState = LoadingState.error;
       errorMessage = e.toString();
     }
+
     notifyListeners();
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:weather_apis/utils/constants/colors.dart';
+import 'package:weather_apis/features/presentation/screens/future_screen/widgets/list_container.dart';
+import 'package:weather_apis/features/presentation/screens/future_screen/widgets/pick_date.dart';
+import 'package:weather_apis/features/presentation/screens/future_screen/widgets/future_container.dart';
 import 'package:weather_apis/utils/constants/sizes.dart';
 import '../../../domain/provider/weaher_provider.dart';
 
@@ -23,12 +25,29 @@ class FutureScreen extends StatefulWidget {
 
 class _FutureTabState extends State<FutureScreen> {
   @override
+  void initState() {
+    super.initState();
+
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    final formatted = DateFormat('yyyy-MM-dd').format(tomorrow);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final loc = widget.locationController.text.trim();
+      if (loc.isNotEmpty) {
+
+        context.read<WeatherProvider>().fetchFuture(loc, formatted);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final prov = context.watch<WeatherProvider>();
 
     if (prov.futureState == LoadingState.loading) {
       return const Center(child: CircularProgressIndicator());
     }
+
     if (prov.futureState == LoadingState.error) {
       return Center(child: Text('Error: ${prov.errorMessage}'));
     }
@@ -54,102 +73,27 @@ class _FutureTabState extends State<FutureScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                date,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final now = DateTime.now();
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: now.add(const Duration(days: 15)),
-                    firstDate: now.add(const Duration(days: 14)),
-                    lastDate: now.add(const Duration(days: 300)),
-                  );
-                  if (picked != null) {
-                    widget.onDateChanged(picked);
-                    final formatted = DateFormat('yyyy-MM-dd').format(picked);
-                    prov.fetchFuture(widget.locationController.text, formatted);
-                  }
-                },
-                icon: const Icon(
-                  Icons.calendar_month,
-                  size: ZohSizes.md,
-                  color: Colors.white,
-                ),
-                label: const Text(
-                  "Pick Date",
-                  style: TextStyle(color: Colors.white, fontSize: ZohSizes.md),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ZohColors.darkColor,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: ZohSizes.md),
-          Center(
-            child: Column(
-              children: [
-                Image.network(
-                  'https:${dayInfo['condition']?['icon']}',
-                  width: 80,
-                  height: 80,
-                ),
-                Text(
-                  dayInfo['condition']?['text'] ?? '',
-                  style: const TextStyle(
-                    fontSize: ZohSizes.spaceBtwZoh,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: ZohSizes.sm),
-                Text(
-                  "Avg Temp: ${dayInfo['avgtemp_c']}°C",
-                  style: const TextStyle(
-                    fontSize: ZohSizes.md,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  "Max: ${dayInfo['maxtemp_c']}°C • Min: ${dayInfo['mintemp_c']}°C",
-                  style: const TextStyle(
-                    fontSize: ZohSizes.md,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  "Humidity: ${dayInfo['avghumidity']}%",
-                  style: const TextStyle(
-                    fontSize: ZohSizes.md,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  "UV: ${dayInfo['uv']}",
-                  style: const TextStyle(
-                    fontSize: ZohSizes.md,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: ZohSizes.sm),
-                Text(
-                  "Sunrise: ${astro['sunrise']} • Sunset: ${astro['sunset']}",
-                  style: const TextStyle(
-                    fontSize: ZohSizes.md,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+          PickDate(
+            date: DateFormat('yyyy-MM-dd').format(
+              widget.selectedDate.isBefore(DateTime.now().add(const Duration(days: 1)))
+                  ? DateTime.now().add(const Duration(days: 1))
+                  : widget.selectedDate,
             ),
+            locationController: widget.locationController,
+            onDateChanged: (picked) {
+              // update parent selectedDate via callback and also fetch
+              widget.onDateChanged(picked);
+              final formatted = DateFormat('yyyy-MM-dd').format(picked);
+              final loc = widget.locationController.text.trim();
+              if (loc.isNotEmpty) {
+                prov.fetchFuture(loc, formatted);
+              }
+            },
+            prov: prov,
           ),
+
+          const SizedBox(height: ZohSizes.md),
+          FutureContainer(dayInfo: dayInfo, astro: astro),
           const SizedBox(height: ZohSizes.spaceBtwZoh),
           const Text(
             "Hourly Forecast",
@@ -160,43 +104,25 @@ class _FutureTabState extends State<FutureScreen> {
           ),
           const SizedBox(height: ZohSizes.sm),
           SizedBox(
-            height: 140,
+            height: 180,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
               itemCount: hours.length > 8 ? 8 : hours.length,
               itemBuilder: (context, index) {
                 final h = hours[index];
-                return Container(
-                  width: 130,
-                  margin: const EdgeInsets.only(right: 8),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        h['time'].toString().split(' ').last,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "${h['temp_c']}°C",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        h['condition']?['text'] ?? '',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        "Rain: ${h['chance_of_rain']}%",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
+                final conditionText = h['condition']?['text'] ?? '';
+                final conditionIcon = h['condition']?['icon'];
+                final temp = h['temp_c'];
+                final time = h['time'].toString().split(' ').last;
+                final rainChance = h['chance_of_rain'];
+
+                return ListContainer(
+                  time: time,
+                  conditionIcon: conditionIcon,
+                  temp: temp,
+                  conditionText: conditionText,
+                  rainChance: rainChance,
                 );
               },
             ),

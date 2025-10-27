@@ -3,8 +3,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:weather_apis/utils/constants/colors.dart';
 import 'package:weather_apis/utils/constants/sizes.dart';
 
-class CurrentShimmer extends StatelessWidget {
-  const CurrentShimmer({super.key});
+class MarineShimmer extends StatelessWidget {
+  const MarineShimmer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,19 +18,8 @@ class CurrentShimmer extends StatelessWidget {
           children: [
             // Location shimmer
             Container(
-              width: 180,
-              height: 20,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(ZohSizes.spaceBtwZoh),
-                color: ZohColors.bodyTextColor,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Temperature shimmer
-            Container(
               width: 100,
-              height: 40,
+              height: 20,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(ZohSizes.spaceBtwZoh),
                 color: ZohColors.bodyTextColor,
@@ -38,15 +27,17 @@ class CurrentShimmer extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Weather condition shimmer
+            // Forecast shimmer
             Container(
-              width: 80,
+              width: 200,
               height: 20,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(ZohSizes.spaceBtwZoh,),
+                borderRadius: BorderRadius.circular(ZohSizes.spaceBtwZoh),
                 color: ZohColors.bodyTextColor,
               ),
             ),
+            const SizedBox(height: 12),
+
             const SizedBox(height: 24),
 
             // InfoTiles shimmer (same layout as your GridView)
@@ -69,6 +60,16 @@ class CurrentShimmer extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      // Time shimmer
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
                       // Icon shimmer circle
                       Container(
                         width: 40,

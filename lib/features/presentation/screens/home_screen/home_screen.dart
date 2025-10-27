@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_apis/features/presentation/screens/current_screen/current_screen.dart';
-import 'package:weather_apis/features/presentation/screens/current_screen/widgets/info_tile.dart';
 import 'package:weather_apis/utils/constants/colors.dart';
 import 'package:weather_apis/utils/constants/sizes.dart';
 
@@ -63,6 +62,25 @@ class _HomeScreenState extends State<HomeScreen>
           labelColor: ZohColors.secondaryColor,
           unselectedLabelColor: ZohColors.secondaryColor,
           indicatorColor: ZohColors.primaryColor,
+          labelStyle: TextStyle(
+            fontSize: ZohSizes.md,
+            fontWeight: FontWeight.bold,
+          ),
+          unselectedLabelStyle: TextStyle(
+            fontWeight: FontWeight.normal
+          ),
+          splashBorderRadius: BorderRadius.circular(ZohSizes.md),
+          overlayColor: WidgetStateProperty.resolveWith<Color?>(
+                (Set<WidgetState> states) {
+              if (states.contains(WidgetState.pressed)) {
+                return ZohColors.primaryColor.withOpacity(0.2);
+              }
+              if (states.contains(WidgetState.hovered)) {
+                return ZohColors.primaryColor.withOpacity(0.1);
+              }
+              return null; // default no overlay
+            },
+          ),
           tabs: const [
             Tab(text: 'Current'),
             Tab(text: 'Marine'),

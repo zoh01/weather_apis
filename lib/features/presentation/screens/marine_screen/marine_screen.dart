@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_apis/features/presentation/screens/marine_screen/widgets/marine_shimmer.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../domain/provider/weaher_provider.dart';
@@ -10,8 +11,8 @@ class MarineScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (prov.marineState == LoadingState.loading) {
-      return const Center(child: CircularProgressIndicator());
+    if (prov.currentState == LoadingState.loading) {
+      return MarineShimmer();
     }
 
     if (prov.marineState == LoadingState.error) {
@@ -70,10 +71,11 @@ class MarineScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
 
-        Expanded(
+        Flexible(
           child: GridView.builder(
-            shrinkWrap: true,
+            padding: EdgeInsets.all(ZohSizes.xs),
             itemCount: hours.length,
+            physics: BouncingScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               childAspectRatio: 0.9,
@@ -85,7 +87,7 @@ class MarineScreen extends StatelessWidget {
               final hasMarineData = swell != null || wave != null;
 
               return Container(
-                margin: const EdgeInsets.all(ZohSizes.iconXs),
+                margin: const EdgeInsets.all(ZohSizes.fontSizeSm),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: ZohColors.bodyTextColor,
@@ -100,31 +102,39 @@ class MarineScreen extends StatelessWidget {
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      h['time'].toString().split(' ').last,
-                      style: TextStyle(
-                        fontSize: ZohSizes.defaultSpace,
-                        fontWeight: FontWeight.bold,
-                        color: ZohColors.darkColor,
+                    Flexible(
+                      child: Text(
+                        overflow: TextOverflow.ellipsis,
+                        h['time'].toString().split(' ').last,
+                        style: TextStyle(
+                          fontSize: ZohSizes.defaultSpace,
+                          fontWeight: FontWeight.bold,
+                          color: ZohColors.darkColor,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
                     if (h['condition']?['icon'] != null)
                       Image.network(
                         'https:${h['condition']?['icon']}',
-                        width: 70,
-                        height: 70,
+                        width: 60,
+                        height: 60,
                         errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                       ),
                     const SizedBox(height: 6),
-                    Text(
-                      h['condition']?['text'] ?? '',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: ZohSizes.md,
-                        color: ZohColors.darkColor,
-                        fontWeight: FontWeight.bold,
+                    Flexible(
+                      child: Text(
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        h['condition']?['text'] ?? '',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: ZohSizes.md,
+                          color: ZohColors.darkColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     if (h['temp_c'] != null) ...[

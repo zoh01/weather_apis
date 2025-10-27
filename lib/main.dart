@@ -6,7 +6,7 @@ import 'package:weather_apis/features/presentation/screens/splash_screen/splash_
 import 'features/domain/provider/weaher_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: "api.env"); // or your file name
+  await dotenv.load(fileName: "api.env");
   runApp(
     MultiProvider(
       providers: [
