@@ -9,8 +9,8 @@ class MarineShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: ZohColors.darkGrey,
-      highlightColor: Colors.grey.shade400,
+      baseColor: Colors.white54,
+      highlightColor: Colors.grey,
       child: SingleChildScrollView(
         padding: EdgeInsets.all(ZohSizes.md),
         child: Column(
@@ -36,15 +36,12 @@ class MarineShimmer extends StatelessWidget {
                 color: ZohColors.bodyTextColor,
               ),
             ),
-            const SizedBox(height: 12),
-
-            const SizedBox(height: 24),
-
+            const SizedBox(height: ZohSizes.defaultSpace),
             // InfoTiles shimmer (same layout as your GridView)
             GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemCount: 6, // Same number of tiles
+              itemCount: 6,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: ZohSizes.gridViewSpacing,

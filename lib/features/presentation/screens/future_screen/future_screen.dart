@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:weather_apis/features/presentation/screens/future_screen/widgets/list_container.dart';
-import 'package:weather_apis/features/presentation/screens/future_screen/widgets/pick_date.dart';
-import 'package:weather_apis/features/presentation/screens/future_screen/widgets/future_container.dart';
-import 'package:weather_apis/utils/constants/sizes.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:weather_apis/features/presentation/screens/future_screen/widgets/future_shimmer.dart';
+
+import '../../../../utils/constants/colors.dart';
+import '../../../../utils/constants/sizes.dart';
+import 'widgets/list_container.dart';
+import 'widgets/pick_date.dart';
+import 'widgets/future_container.dart';
 import '../../../domain/provider/weaher_provider.dart';
 
 class FutureScreen extends StatefulWidget {
@@ -20,32 +25,75 @@ class FutureScreen extends StatefulWidget {
   });
 
   @override
-  State<FutureScreen> createState() => _FutureTabState();
+  State<FutureScreen> createState() => _FutureScreenState();
 }
 
-class _FutureTabState extends State<FutureScreen> {
+class _FutureScreenState extends State<FutureScreen> {
+  String? _detectedCity;
+
   @override
   void initState() {
     super.initState();
+    _detectAndFetchWeather();
+  }
 
-    final tomorrow = DateTime.now().add(const Duration(days: 1));
-    final formatted = DateFormat('yyyy-MM-dd').format(tomorrow);
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final loc = widget.locationController.text.trim();
-      if (loc.isNotEmpty) {
-
-        context.read<WeatherProvider>().fetchFuture(loc, formatted);
+  /// ✅ Automatically get user’s location & fetch tomorrow’s forecast
+  Future<void> _detectAndFetchWeather() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enable location services')),
+        );
+        return;
       }
-    });
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.deniedForever ||
+          permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permissions are denied')),
+        );
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      final placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      final city = placemarks.first.locality ?? 'Unknown';
+      setState(() => _detectedCity = city);
+
+      widget.locationController.text = city;
+
+      final tomorrow = DateTime.now().add(const Duration(days: 1));
+      final formatted = DateFormat('yyyy-MM-dd').format(tomorrow);
+
+      context.read<WeatherProvider>().fetchFuture(city, formatted);
+    } catch (e) {
+      print('Error detecting location: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error getting location: $e')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final prov = context.watch<WeatherProvider>();
 
+    // Shimmer or loading indicator
     if (prov.futureState == LoadingState.loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const FutureShimmer();
     }
 
     if (prov.futureState == LoadingState.error) {
@@ -54,7 +102,7 @@ class _FutureTabState extends State<FutureScreen> {
 
     final f = prov.futureForDate;
     if (f == null) {
-      return const Center(child: Text('No future weather loaded'));
+      return const Center(child: Text('No forecast data yet'));
     }
 
     final forecastList = f['forecast']?['forecastday'] as List?;
@@ -73,16 +121,28 @@ class _FutureTabState extends State<FutureScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PickDate(
-            date: DateFormat('yyyy-MM-dd').format(
-              widget.selectedDate.isBefore(DateTime.now().add(const Duration(days: 1)))
-                  ? DateTime.now().add(const Duration(days: 1))
-                  : widget.selectedDate,
+          // ✅ City name
+          if (_detectedCity != null)
+            Text(
+              '📍 $_detectedCity',
+              style: const TextStyle(
+                fontSize: ZohSizes.spaceBtwZoh,
+                fontWeight: FontWeight.bold,
+                color: ZohColors.darkColor,
+              ),
             ),
+
+          const SizedBox(height: ZohSizes.sm),
+
+          // ✅ Pick Date widget
+          PickDate(
+            selectedDate: widget.selectedDate, // <-- DateTime
             locationController: widget.locationController,
             onDateChanged: (picked) {
-              // update parent selectedDate via callback and also fetch
+              // parent should update its selectedDate state (you already pass a callback)
               widget.onDateChanged(picked);
+
+              // the PickDate itself will call prov.fetchFuture, but you can also call here if needed:
               final formatted = DateFormat('yyyy-MM-dd').format(picked);
               final loc = widget.locationController.text.trim();
               if (loc.isNotEmpty) {
@@ -92,9 +152,14 @@ class _FutureTabState extends State<FutureScreen> {
             prov: prov,
           ),
 
+
           const SizedBox(height: ZohSizes.md),
+
+          // ✅ Main Forecast Card
           FutureContainer(dayInfo: dayInfo, astro: astro),
+
           const SizedBox(height: ZohSizes.spaceBtwZoh),
+
           const Text(
             "Hourly Forecast",
             style: TextStyle(
@@ -103,6 +168,7 @@ class _FutureTabState extends State<FutureScreen> {
             ),
           ),
           const SizedBox(height: ZohSizes.sm),
+
           SizedBox(
             height: 180,
             child: ListView.builder(
@@ -125,6 +191,27 @@ class _FutureTabState extends State<FutureScreen> {
                   rainChance: rainChance,
                 );
               },
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // ✅ Manual Refresh Button
+          Center(
+            child: ElevatedButton.icon(
+              onPressed: _detectAndFetchWeather,
+              icon: const Icon(Icons.my_location, color: Colors.white),
+              label: const Text(
+                "Refresh My Location Forecast",
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: ZohColors.darkColor,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
             ),
           ),
         ],

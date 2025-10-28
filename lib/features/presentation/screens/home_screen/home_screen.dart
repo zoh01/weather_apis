@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_apis/features/presentation/screens/current_screen/current_screen.dart';
@@ -23,22 +25,94 @@ class _HomeScreenState extends State<HomeScreen>
     text: 'Lagos', // example: mid-Atlantic Ocean
   );
   late TabController _tabController;
-  DateTime selectedDate = DateTime.now().add(const Duration(days: 15));
+  DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
     super.initState();
+
+    _tabController = TabController(length: 3, vsync: this);
+
+    _tabController.addListener(() {
+      if (_tabController.index == 2) {
+        final loc = _locationController.text.trim();
+        if (loc.isNotEmpty) {
+          context.read<WeatherProvider>().fetchFuture(
+            loc,
+            DateFormat('yyyy-MM-dd').format(selectedDate),
+          );
+        }
+      }
+    });
+
+    // 👇 Detect location and fetch all forecasts
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _detectAndFetchWeather();
+    });
+
+    // 🔄 Auto-refresh location every 5 minutes
+    Future.delayed(const Duration(minutes: 5), _detectAndFetchWeather);
+  }
+
+
+  String? _detectedCity;
+
+  Future<void> _detectAndFetchWeather() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enable location services')),
+        );
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.deniedForever ||
+          permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permissions are denied')),
+        );
+        return;
+      }
+
+      // ✅ Get current position
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      // ✅ Reverse geocode to get city name
+      final placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      final city = placemarks.first.locality ?? 'Unknown';
+      setState(() {
+        _detectedCity = city;
+        _locationController.text = city;
+      });
+
+      // ✅ Fetch all 3 sections (Current, Marine, Future)
       final prov = context.read<WeatherProvider>();
-      prov.fetchCurrent(_locationController.text);
-      prov.fetchMarine(_locationController.text);
+      prov.fetchCurrent(city);
+      prov.fetchMarine(city);
       prov.fetchFuture(
-        _locationController.text,
+        city,
         DateFormat('yyyy-MM-dd').format(selectedDate),
       );
-    });
+    } catch (e) {
+      print('Error detecting location: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error getting location: $e')),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen>
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: const Text(
-          'Weather API Integration',
+          'Weather Forecast',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: ZohSizes.md,
@@ -90,6 +164,19 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       body: Column(
         children: [
+          if (_detectedCity != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Text(
+                '📍 Current Location: $_detectedCity',
+                style: const TextStyle(
+                  fontSize: ZohSizes.md,
+                  fontWeight: FontWeight.bold,
+                  color: ZohColors.darkColor,
+                ),
+              ),
+            ),
+
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Row(
@@ -176,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen>
                 MarineScreen(prov: prov),
                 FutureScreen(
                   locationController: _locationController,
-                  selectedDate: selectedDate,
+                  selectedDate: selectedDate, // ✅ Pass DateTime, matches new PickDate
                   onDateChanged: (newDate) {
                     setState(() => selectedDate = newDate);
                   },

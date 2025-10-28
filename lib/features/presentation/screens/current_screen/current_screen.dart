@@ -28,7 +28,7 @@ class _CurrentScreenState extends State<CurrentScreen> {
 
     final cur = widget.prov.current;
     if (cur == null) {
-      return const Center(child: Text('No data yet'));
+      return const CurrentShimmer();
     }
 
     final location = cur['location'] ?? {};

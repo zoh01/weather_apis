@@ -20,7 +20,7 @@ class MarineScreen extends StatelessWidget {
     }
 
     final m = prov.marine;
-    if (m == null) return const Center(child: Text('No marine data'));
+    if (m == null) return const MarineShimmer();
 
     final regionName = m['location']?['name'] ?? '';
     final tides = m['tide'] ?? {};

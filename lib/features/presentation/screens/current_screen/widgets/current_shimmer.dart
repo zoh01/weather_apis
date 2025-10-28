@@ -9,8 +9,8 @@ class CurrentShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: ZohColors.darkGrey,
-      highlightColor: Colors.grey.shade400,
+      baseColor: Colors.white54,
+      highlightColor: Colors.grey,
       child: SingleChildScrollView(
         padding: EdgeInsets.all(ZohSizes.md),
         child: Column(
