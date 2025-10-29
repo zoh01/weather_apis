@@ -15,8 +15,8 @@ class _FutureShimmerState extends State<FutureShimmer> {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.white54,
-      highlightColor: Colors.grey,
+      baseColor: Colors.grey,
+      highlightColor: ZohColors.darkerGrey,
       child: SingleChildScrollView(
         padding: EdgeInsets.all(ZohSizes.md),
         child: Column(
@@ -30,7 +30,7 @@ class _FutureShimmerState extends State<FutureShimmer> {
                   height: 20,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(ZohSizes.spaceBtwZoh),
-                    color: ZohColors.bodyTextColor,
+                    color: ZohColors.white,
                   ),
                 ),
                 // Calendar Shimmer
@@ -39,7 +39,7 @@ class _FutureShimmerState extends State<FutureShimmer> {
                   height: 20,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(ZohSizes.spaceBtwZoh),
-                    color: ZohColors.bodyTextColor,
+                    color: ZohColors.white,
                   ),
                 ),
               ],
@@ -48,10 +48,10 @@ class _FutureShimmerState extends State<FutureShimmer> {
             Center(
               child: Container(
                 width: MediaQuery.of(context).size.width * .8,
-                height: MediaQuery.of(context).size.height * .8,
+                height: MediaQuery.of(context).size.height * .6,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(ZohSizes.spaceBtwZoh),
-                  color: ZohColors.bodyTextColor,
+                  color: ZohColors.white,
                 ),
               ),
             ),
@@ -61,7 +61,7 @@ class _FutureShimmerState extends State<FutureShimmer> {
               height: 20,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(ZohSizes.spaceBtwZoh),
-                color: ZohColors.bodyTextColor,
+                color: ZohColors.white,
               ),
             ),
 

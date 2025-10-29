@@ -9,8 +9,8 @@ class MarineShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(
-      baseColor: Colors.white54,
-      highlightColor: Colors.grey,
+      baseColor: Colors.grey,
+      highlightColor: ZohColors.darkerGrey,
       child: SingleChildScrollView(
         padding: EdgeInsets.all(ZohSizes.md),
         child: Column(
@@ -22,7 +22,7 @@ class MarineShimmer extends StatelessWidget {
               height: 20,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(ZohSizes.spaceBtwZoh),
-                color: ZohColors.bodyTextColor,
+                color: ZohColors.white,
               ),
             ),
             const SizedBox(height: 12),
@@ -33,7 +33,7 @@ class MarineShimmer extends StatelessWidget {
               height: 20,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(ZohSizes.spaceBtwZoh),
-                color: ZohColors.bodyTextColor,
+                color: ZohColors.white,
               ),
             ),
             const SizedBox(height: ZohSizes.defaultSpace),
@@ -51,7 +51,7 @@ class MarineShimmer extends StatelessWidget {
                 return Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.grey,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -78,18 +78,10 @@ class MarineShimmer extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       // Title shimmer
-                      Container(
-                        width: 60,
-                        height: 10,
-                        color: Colors.white,
-                      ),
+                      Container(width: 60, height: 10, color: Colors.white),
                       const SizedBox(height: 6),
                       // Value shimmer
-                      Container(
-                        width: 40,
-                        height: 10,
-                        color: Colors.white,
-                      ),
+                      Container(width: 40, height: 10, color: Colors.white),
                     ],
                   ),
                 );

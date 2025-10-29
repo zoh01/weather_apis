@@ -5,7 +5,6 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:weather_apis/features/presentation/screens/future_screen/widgets/future_shimmer.dart';
 
-import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
 import 'widgets/list_container.dart';
 import 'widgets/pick_date.dart';
@@ -37,7 +36,7 @@ class _FutureScreenState extends State<FutureScreen> {
     _detectAndFetchWeather();
   }
 
-  /// ✅ Automatically get user’s location & fetch tomorrow’s forecast
+  /// Automatically get user’s location & fetch tomorrow’s forecast
   Future<void> _detectAndFetchWeather() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -81,9 +80,9 @@ class _FutureScreenState extends State<FutureScreen> {
       context.read<WeatherProvider>().fetchFuture(city, formatted);
     } catch (e) {
       print('Error detecting location: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error getting location: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error getting location: $e')));
     }
   }
 
@@ -121,20 +120,7 @@ class _FutureScreenState extends State<FutureScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ✅ City name
-          if (_detectedCity != null)
-            Text(
-              '📍 $_detectedCity',
-              style: const TextStyle(
-                fontSize: ZohSizes.spaceBtwZoh,
-                fontWeight: FontWeight.bold,
-                color: ZohColors.darkColor,
-              ),
-            ),
-
-          const SizedBox(height: ZohSizes.sm),
-
-          // ✅ Pick Date widget
+          // Pick Date widget
           PickDate(
             selectedDate: widget.selectedDate, // <-- DateTime
             locationController: widget.locationController,
@@ -152,13 +138,12 @@ class _FutureScreenState extends State<FutureScreen> {
             prov: prov,
           ),
 
-
           const SizedBox(height: ZohSizes.md),
 
-          // ✅ Main Forecast Card
+          // Main Forecast Card
           FutureContainer(dayInfo: dayInfo, astro: astro),
 
-          const SizedBox(height: ZohSizes.spaceBtwZoh),
+          const SizedBox(height: ZohSizes.md),
 
           const Text(
             "Hourly Forecast",
@@ -194,26 +179,26 @@ class _FutureScreenState extends State<FutureScreen> {
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: ZohSizes.md),
 
-          // ✅ Manual Refresh Button
-          Center(
-            child: ElevatedButton.icon(
-              onPressed: _detectAndFetchWeather,
-              icon: const Icon(Icons.my_location, color: Colors.white),
-              label: const Text(
-                "Refresh My Location Forecast",
-                style: TextStyle(color: Colors.white),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ZohColors.darkColor,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-          ),
+          // // ✅ Manual Refresh Button
+          // Center(
+          //   child: ElevatedButton.icon(
+          //     onPressed: _detectAndFetchWeather,
+          //     icon: const Icon(Icons.my_location, color: Colors.white),
+          //     label: const Text(
+          //       "Refresh My Location Forecast",
+          //       style: TextStyle(color: Colors.white),
+          //     ),
+          //     style: ElevatedButton.styleFrom(
+          //       backgroundColor: ZohColors.darkColor,
+          //       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          //       shape: RoundedRectangleBorder(
+          //         borderRadius: BorderRadius.circular(12),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

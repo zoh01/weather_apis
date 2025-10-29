@@ -3,13 +3,14 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
+
 import 'package:weather_apis/features/presentation/screens/current_screen/current_screen.dart';
+import 'package:weather_apis/features/presentation/screens/future_screen/future_screen.dart';
+import 'package:weather_apis/features/presentation/screens/marine_screen/marine_screen.dart';
 import 'package:weather_apis/utils/constants/colors.dart';
 import 'package:weather_apis/utils/constants/sizes.dart';
-
 import '../../../domain/provider/weaher_provider.dart';
-import '../future_screen/future_screen.dart';
-import '../marine_screen/marine_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,17 +21,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-
   final TextEditingController _locationController = TextEditingController(
-    text: 'Lagos', // example: mid-Atlantic Ocean
+    text: 'Lagos',
   );
+
   late TabController _tabController;
   DateTime selectedDate = DateTime.now().add(const Duration(days: 1));
+  String? _detectedCity;
 
   @override
   void initState() {
     super.initState();
-
     _tabController = TabController(length: 3, vsync: this);
 
     _tabController.addListener(() {
@@ -49,13 +50,7 @@ class _HomeScreenState extends State<HomeScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _detectAndFetchWeather();
     });
-
-    // 🔄 Auto-refresh location every 5 minutes
-    Future.delayed(const Duration(minutes: 5), _detectAndFetchWeather);
   }
-
-
-  String? _detectedCity;
 
   Future<void> _detectAndFetchWeather() async {
     try {
@@ -101,18 +96,14 @@ class _HomeScreenState extends State<HomeScreen>
       final prov = context.read<WeatherProvider>();
       prov.fetchCurrent(city);
       prov.fetchMarine(city);
-      prov.fetchFuture(
-        city,
-        DateFormat('yyyy-MM-dd').format(selectedDate),
-      );
+      prov.fetchFuture(city, DateFormat('yyyy-MM-dd').format(selectedDate));
     } catch (e) {
       print('Error detecting location: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error getting location: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error getting location: $e')));
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen>
           'Weather Forecast',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            fontSize: ZohSizes.md,
+            fontSize: ZohSizes.spaceBtwZoh,
             color: ZohColors.secondaryColor,
           ),
         ),
@@ -136,25 +127,23 @@ class _HomeScreenState extends State<HomeScreen>
           labelColor: ZohColors.secondaryColor,
           unselectedLabelColor: ZohColors.secondaryColor,
           indicatorColor: ZohColors.primaryColor,
-          labelStyle: TextStyle(
+          labelStyle: const TextStyle(
             fontSize: ZohSizes.md,
             fontWeight: FontWeight.bold,
           ),
-          unselectedLabelStyle: TextStyle(
-            fontWeight: FontWeight.normal
-          ),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
           splashBorderRadius: BorderRadius.circular(ZohSizes.md),
-          overlayColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) {
-              if (states.contains(WidgetState.pressed)) {
-                return ZohColors.primaryColor.withOpacity(0.2);
-              }
-              if (states.contains(WidgetState.hovered)) {
-                return ZohColors.primaryColor.withOpacity(0.1);
-              }
-              return null; // default no overlay
-            },
-          ),
+          overlayColor: WidgetStateProperty.resolveWith<Color?>((
+            Set<WidgetState> states,
+          ) {
+            if (states.contains(WidgetState.pressed)) {
+              return ZohColors.primaryColor.withOpacity(0.2);
+            }
+            if (states.contains(WidgetState.hovered)) {
+              return ZohColors.primaryColor.withOpacity(0.1);
+            }
+            return null;
+          }),
           tabs: const [
             Tab(text: 'Current'),
             Tab(text: 'Marine'),
@@ -164,97 +153,158 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       body: Column(
         children: [
-          if (_detectedCity != null)
+          // Shimmer Loading
+          if (_detectedCity == null)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(
-                '📍 Current Location: $_detectedCity',
-                style: const TextStyle(
-                  fontSize: ZohSizes.md,
-                  fontWeight: FontWeight.bold,
-                  color: ZohColors.darkColor,
-                ),
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Shimmer.fromColors(
+                    baseColor: ZohColors.grey,
+                    highlightColor: ZohColors.darkerGrey,
+                    child: Container(
+                      width: 100,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          ZohSizes.spaceBtwZoh,
+                        ),
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Shimmer.fromColors(
+                    baseColor: ZohColors.grey,
+                    highlightColor: ZohColors.darkerGrey,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 50,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                ZohSizes.spaceBtwZoh,
+                              ),
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          width: 80,
+                          height: 35,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                              ZohSizes.spaceBtwZoh,
+                            ),
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.location_on_sharp, color: Colors.redAccent),
+                      Text(
+                        ': $_detectedCity',
+                        style: const TextStyle(
+                          fontSize: ZohSizes.spaceBtwZoh,
+                          fontWeight: FontWeight.bold,
+                          color: ZohColors.darkColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _locationController,
+                          keyboardType: TextInputType.text,
+                          cursorColor: ZohColors.darkColor,
+                          style: const TextStyle(
+                            color: Colors.black87,
+                            fontSize: ZohSizes.md,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Enter City',
+                            labelStyle: const TextStyle(
+                              color: ZohColors.darkColor,
+                              fontSize: ZohSizes.md,
+                            ),
+                            hintText: 'City',
+                            hintStyle: TextStyle(color: Colors.grey[400]),
+                            filled: true,
+                            fillColor: ZohColors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(ZohSizes.sm),
+                              borderSide: BorderSide(
+                                color: Colors.grey.shade400,
+                                width: 1,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(ZohSizes.sm),
+                              borderSide: const BorderSide(
+                                color: ZohColors.primaryColor,
+                                width: 1.8,
+                              ),
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.location_on_outlined,
+                              color: ZohColors.primaryColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: ZohSizes.sm),
+                      ElevatedButton(
+                        onPressed: () {
+                          final loc = _locationController.text.trim();
+                          prov.fetchCurrent(loc);
+                          prov.fetchMarine(loc);
+                          prov.fetchFuture(
+                            loc,
+                            DateFormat('yyyy-MM-dd').format(selectedDate),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          elevation: 4,
+                          backgroundColor: ZohColors.primaryColor,
+                        ),
+                        child: const Text(
+                          'Fetch',
+                          style: TextStyle(
+                            fontSize: ZohSizes.md,
+                            fontWeight: FontWeight.bold,
+                            color: ZohColors.secondaryColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
 
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _locationController,
-                    keyboardType: TextInputType.text,
-                    cursorColor: ZohColors.darkColor,
-                    style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: ZohSizes.md,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: 'Enter Location',
-                      labelStyle: TextStyle(
-                        color: ZohColors.darkColor,
-                        fontSize: ZohSizes.md,
-                      ),
-                      hintText: 'City',
-                      hintStyle: TextStyle(color: Colors.grey[400]),
-                      filled: true,
-                      fillColor: ZohColors.white,
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(ZohSizes.sm),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade400,
-                          width: 1,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(ZohSizes.sm),
-                        borderSide: BorderSide(
-                          color: ZohColors.primaryColor,
-                          width: 1.8,
-                        ),
-                      ),
-                      prefixIcon: Icon(
-                        Icons.location_on_outlined,
-                        color: ZohColors.primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: ZohSizes.sm),
-                ElevatedButton(
-                  onPressed: () {
-                    // fetch all
-                    final loc = _locationController.text.trim();
-                    prov.fetchCurrent(loc);
-                    prov.fetchMarine(loc);
-                    prov.fetchFuture(
-                      loc,
-                      DateFormat('yyyy-MM-dd').format(selectedDate),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    elevation: 4,
-                    backgroundColor: ZohColors.primaryColor,
-                  ),
-                  child: const Text(
-                    'Fetch',
-                    style: TextStyle(
-                      fontSize: ZohSizes.md,
-                      fontWeight: FontWeight.bold,
-                      color: ZohColors.secondaryColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Tab Views
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -263,7 +313,7 @@ class _HomeScreenState extends State<HomeScreen>
                 MarineScreen(prov: prov),
                 FutureScreen(
                   locationController: _locationController,
-                  selectedDate: selectedDate, // ✅ Pass DateTime, matches new PickDate
+                  selectedDate: selectedDate,
                   onDateChanged: (newDate) {
                     setState(() => selectedDate = newDate);
                   },
@@ -276,4 +326,3 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 }
-

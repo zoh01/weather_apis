@@ -62,7 +62,7 @@ class WeatherProvider extends ChangeNotifier {
       if (diffDays <= 14) {
         // use forecast endpoint (supports days up to 14)
         response = await _service.getForecast(location, (diffDays < 1) ? 1 : diffDays + 1);
-        // Note: forecast.json returns forecastday list - pick the specific date inside UI when rendering
+        // Note: forecast.json returns foreCastDay list - pick the specific date inside UI when rendering
         debugPrint('Used forecast.json (days=${(diffDays < 1) ? 1 : diffDays + 1})');
       } else {
         // use future endpoint (15..300 days)
