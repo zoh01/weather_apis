@@ -5,12 +5,12 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
-import 'package:weather_apis/features/presentation/screens/current_screen/current_screen.dart';
-import 'package:weather_apis/features/presentation/screens/future_screen/future_screen.dart';
-import 'package:weather_apis/features/presentation/screens/marine_screen/marine_screen.dart';
-import 'package:weather_apis/utils/constants/colors.dart';
-import 'package:weather_apis/utils/constants/sizes.dart';
+import '../../../../utils/constants/colors.dart';
+import '../../../../utils/constants/sizes.dart';
 import '../../../domain/provider/weaher_provider.dart';
+import '../current_screen/current_screen.dart';
+import '../future_screen/future_screen.dart';
+import '../marine_screen/marine_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:weather_apis/utils/constants/colors.dart';
-import 'package:weather_apis/utils/constants/sizes.dart';
+
+import '../../../../../utils/constants/colors.dart';
+import '../../../../../utils/constants/sizes.dart';
 
 class InfoTile extends StatelessWidget {
   final String title;

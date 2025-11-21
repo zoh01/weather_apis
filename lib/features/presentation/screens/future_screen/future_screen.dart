@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:weather_apis/features/presentation/screens/future_screen/widgets/future_shimmer.dart';
+import 'package:weather_forecast_app/features/presentation/screens/future_screen/widgets/future_shimmer.dart';
 
 import '../../../../utils/constants/sizes.dart';
 import 'widgets/list_container.dart';
@@ -28,7 +28,6 @@ class FutureScreen extends StatefulWidget {
 }
 
 class _FutureScreenState extends State<FutureScreen> {
-  String? _detectedCity;
 
   @override
   void initState() {
@@ -70,7 +69,6 @@ class _FutureScreenState extends State<FutureScreen> {
       );
 
       final city = placemarks.first.locality ?? 'Unknown';
-      setState(() => _detectedCity = city);
 
       widget.locationController.text = city;
 
@@ -122,13 +120,10 @@ class _FutureScreenState extends State<FutureScreen> {
         children: [
           // Pick Date widget
           PickDate(
-            selectedDate: widget.selectedDate, // <-- DateTime
+            selectedDate: widget.selectedDate,
             locationController: widget.locationController,
             onDateChanged: (picked) {
-              // parent should update its selectedDate state (you already pass a callback)
               widget.onDateChanged(picked);
-
-              // the PickDate itself will call prov.fetchFuture, but you can also call here if needed:
               final formatted = DateFormat('yyyy-MM-dd').format(picked);
               final loc = widget.locationController.text.trim();
               if (loc.isNotEmpty) {
@@ -180,25 +175,6 @@ class _FutureScreenState extends State<FutureScreen> {
           ),
 
           const SizedBox(height: ZohSizes.md),
-
-          // // ✅ Manual Refresh Button
-          // Center(
-          //   child: ElevatedButton.icon(
-          //     onPressed: _detectAndFetchWeather,
-          //     icon: const Icon(Icons.my_location, color: Colors.white),
-          //     label: const Text(
-          //       "Refresh My Location Forecast",
-          //       style: TextStyle(color: Colors.white),
-          //     ),
-          //     style: ElevatedButton.styleFrom(
-          //       backgroundColor: ZohColors.darkColor,
-          //       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          //       shape: RoundedRectangleBorder(
-          //         borderRadius: BorderRadius.circular(12),
-          //       ),
-          //     ),
-          //   ),
-          // ),
         ],
       ),
     );

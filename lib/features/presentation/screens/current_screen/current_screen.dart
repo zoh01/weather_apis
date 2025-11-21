@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:weather_apis/features/domain/model/current_model.dart';
-import 'package:weather_apis/features/presentation/screens/current_screen/widgets/current_shimmer.dart';
-import 'package:weather_apis/utils/constants/colors.dart';
-import 'package:weather_apis/utils/constants/sizes.dart';
+import 'package:weather_forecast_app/features/presentation/screens/current_screen/widgets/current_shimmer.dart';
+import '../../../../utils/constants/colors.dart';
+import '../../../../utils/constants/sizes.dart';
+import '../../../domain/model/current_model.dart';
 import '../../../domain/provider/weaher_provider.dart';
 import 'widgets/info_tile.dart';
 
