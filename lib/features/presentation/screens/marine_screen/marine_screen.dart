@@ -55,7 +55,7 @@ class MarineScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: ZohSizes.sm),
+        const SizedBox(height: ZohSizes.iconXs),
 
         if (tides.isNotEmpty) ...[
           Column(

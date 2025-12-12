@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen>
       }
     });
 
-    // 👇 Detect location and fetch all forecasts
+    // Detect location and fetch all forecasts
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _detectAndFetchWeather();
     });
@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen>
         return;
       }
 
-      // ✅ Get current position
+      // Get current position
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
@@ -250,8 +250,8 @@ class _HomeScreenState extends State<HomeScreen>
                             filled: true,
                             fillColor: ZohColors.white,
                             contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
+                              horizontal: ZohSizes.md,
+                              vertical: ZohSizes.iconXs,
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(ZohSizes.sm),
