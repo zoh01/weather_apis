@@ -46,3 +46,6 @@ A sleek, modern weather application built with Flutter that provides real-time w
 - **Auto Location** - GPS-based current location
 - **Unit Toggle** - Switch between Celsius/Fahrenheit
 - **Fast Loading** - Quick data retrieval
+
+## 📱 Cross-Platform
+- Android, iOS, Web, Windows, macOS, Linux
