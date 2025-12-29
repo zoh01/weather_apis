@@ -10,4 +10,7 @@ Beautiful weather forecasts at your fingertips.
 
 [Features](#-features) • [Installation](#-installation) • [Usage](#-usage)
 
+![Star](https://img.shields.io/github/stars/zoh01/weather_apis?style=social)
+![Social](https://img.shields.io/github/forks/zoh01/weather_apis?style=social)
+
 </div>
