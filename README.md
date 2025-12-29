@@ -38,3 +38,11 @@ A sleek, modern weather application built with Flutter that provides real-time w
 - **Visibility** - Distance you can see
 - **UV Index** - Sun exposure levels
 - **Sunrise/Sunset** - Solar times
+
+## 🎨 User Experience
+- Beautiful UI - Clean, modern design
+- Weather Icons - Animated weather conditions
+- Dark Mode - Easy on the eyes
+- Auto Location - GPS-based current location
+- Unit Toggle - Switch between Celsius/Fahrenheit
+- Fast Loading - Quick data retrieval
