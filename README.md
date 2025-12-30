@@ -107,3 +107,12 @@ A sleek, modern weather application built with Flutter that provides real-time w
 4. Copy your **API key**
 5. Paste it in api.env file
 
+---
+
+## 💡 Usage
+### Search for a City
+1. Tap the search icon
+2. Type city name (e.g., "London", "New York")
+3. Select from suggestions
+4. View weather details
+
