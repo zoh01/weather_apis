@@ -142,5 +142,21 @@ A sleek, modern weather application built with Flutter that provides real-time w
 ---
 
 ## 🌐 API Reference
+This app uses the **OpenWeatherMap API:**
+
+    // Current Weather
+    GET https://api.openweathermap.org/data/2.5/weather
+    Parameters:
+      - q: City name
+      - appid: Your API key
+      - units: metric/imperial
+    
+    // 5-Day Forecast
+    GET https://api.openweathermap.org/data/2.5/forecast
+    Parameters:
+      - q: City name
+      - appid: Your API key
+      - units: metric/imperial
+
 
 
