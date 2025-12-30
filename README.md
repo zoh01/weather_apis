@@ -116,3 +116,31 @@ A sleek, modern weather application built with Flutter that provides real-time w
 3. Select from suggestions
 4. View weather details
 
+---
+
+## 📱 App Preview
+
+### 🏗️ Project Structure
+    lib/
+    ├── models/              # Data models
+    │   ├── weather.dart
+    │   └── forecast.dart
+    ├── services/            # API & location services
+    │   ├── weather_service.dart
+    │   └── location_service.dart
+    ├── providers/           # State management
+    │   └── weather_provider.dart
+    ├── screens/             # App screens
+    │   ├── home_screen.dart
+    │   ├── search_screen.dart
+    │   └── forecast_screen.dart
+    ├── widgets/             # Reusable widgets
+    │   ├── weather_card.dart
+    │   └── forecast_item.dart
+    └── main.dart
+
+---
+
+## 🌐 API Reference
+
+
