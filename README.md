@@ -158,5 +158,11 @@ This app uses the **OpenWeatherMap API:**
       - appid: Your API key
       - units: metric/imperial
 
+---
+
+## 🎨 Customization
+### Change Theme Colors
+
+
 
 
