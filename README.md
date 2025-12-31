@@ -169,3 +169,9 @@ Edit `lib/constants/app_colors.dart`:
 
 ### Add More Weather Providers
 Implement the `WeatherService` interface:
+
+    abstract class WeatherService {
+      Future<Weather> getCurrentWeather(String city);
+      Future<Forecast> getForecast(String city);
+    }
+
