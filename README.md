@@ -214,3 +214,7 @@ iOS (`ios/Runner/Info.plist`):
     Error: SocketException
     Solution: Check your internet connection
 
+---
+
+## 🗺️ Roadmap
+
