@@ -199,6 +199,8 @@ iOS (`ios/Runner/Info.plist`):
 ---
 
 ## 🐛 Troubleshooting
+### API Key Issues
 
-
+    Error: 401 Unauthorized
+    Solution: Check your API key in api.env file
 
