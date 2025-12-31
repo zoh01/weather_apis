@@ -204,3 +204,8 @@ iOS (`ios/Runner/Info.plist`):
     Error: 401 Unauthorized
     Solution: Check your API key in api.env file
 
+### Location Not Working
+
+    Error: Location permission denied
+    Solution: Grant location permissions in app settings
+
