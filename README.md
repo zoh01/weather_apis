@@ -244,3 +244,6 @@ Contributions welcome!
     
     # Open a Pull Request
 
+---
+
+## 📄 License
