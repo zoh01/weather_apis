@@ -226,3 +226,9 @@ iOS (`ios/Runner/Info.plist`):
 - Weather widgets
 - Weather radar/maps
 - Multiple language support
+
+---
+
+## 🤝 Contributing
+
+
