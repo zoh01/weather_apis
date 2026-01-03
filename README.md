@@ -247,3 +247,14 @@ Contributions welcome!
 ---
 
 ## 📄 License
+This project is licensed under the MIT License - see [LICENSE](#-LICENSE) file.
+
+    MIT License
+    
+    Copyright (c) 2026 [Adebayo Wariz]
+    
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction...
+
+---
