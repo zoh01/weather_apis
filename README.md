@@ -270,3 +270,12 @@ Email: adebayozoh@gmail.com
 LinkedIn: https://www.linkedin.com/in/adebayo-wariz-a8ab9a310/
 
 GitHub: [https://github.com/zoh01](https://github.com/zoh01)
+
+---
+
+<div align="center">
+
+### Built with ❤️ using Flutter
+⭐ Star this repo if you find it helpful!
+
+</div
