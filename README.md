@@ -30,7 +30,7 @@ A sleek, modern weather application built with Flutter that provides real-time w
 - **Multiple Locations** - Track weather in multiple cities
 - **Search** - Find weather for any city worldwide
 
-## 📊 Detailed Metrics
+### 📊 Detailed Metrics
 - **Temperature** - Current, feels-like, min/max
 - **Wind** - Speed and direction
 - **Humidity** - Moisture levels
