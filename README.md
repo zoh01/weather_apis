@@ -96,9 +96,7 @@ A sleek, modern weather application built with Flutter that provides real-time w
     # 3. Configure API Key
     # Open api.env file and add your API key:
     echo "WEATHER_API_KEY=your_api_key_here" > api.env
-    
-    # 4. Run the app
-    flutter run
+
 
 ### Get Your API Key
 1. Visit [OpenWeatherMap](https://openweathermap.org/api)
