@@ -269,5 +269,3 @@ Whatsapp: +234 702 513 6608
 
 ### Built with ❤️ using Flutter
 ⭐ Star this repo if you find it helpful!
-
-</div
