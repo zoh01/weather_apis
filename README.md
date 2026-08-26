@@ -265,10 +265,6 @@ This project is licensed under the MIT License - see [LICENSE](#-LICENSE) file.
 ## 📧 Contact
 Whatsapp: +234 702 513 6608
 
-Email: adebayozoh@gmail.com
-
-
-
 <div align="center">
 
 ### Built with ❤️ using Flutter
