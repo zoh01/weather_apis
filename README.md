@@ -168,8 +168,7 @@ Implement the `WeatherService` interface:
 
     abstract class WeatherService {
       Future<Weather> getCurrentWeather(String city);
-      Future<Forecast> getForecast(String city);
-    }
+
 
 ---
 
