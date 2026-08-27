@@ -152,7 +152,6 @@ This app uses the **OpenWeatherMap API:**
     // 5-Day Forecast
     GET https://api.openweathermap.org/data/2.5/forecast
     Parameters:
-      - q: City name
 
 ---
 
