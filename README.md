@@ -237,7 +237,6 @@ Contributions welcome!
     # Push to the branch
     git push origin feature/AmazingFeature
     
-    # Open a Pull Request
 
 ---
 
