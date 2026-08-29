@@ -25,7 +25,7 @@ Beautiful weather forecasts at your fingertips.
 ### 🌤️ Weather Information
 - **Current Weather** - Real-time temperature, humidity, and conditions
 - **5-Day Forecast** - Extended weather predictions
-- **Hourly Updates** - Hour-by-hour weather breakdown
+
 
 
 ### 📊 Detailed Metrics
